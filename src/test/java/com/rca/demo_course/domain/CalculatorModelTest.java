@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 public class CalculatorModelTest {
 
-    // arrange
+    // Arrange
     private CalculatorModel calculatorModel;
     @BeforeEach
     public void setUp() {
@@ -25,20 +25,20 @@ public class CalculatorModelTest {
     @Test
     @DisplayName("Adding negative numbers")
     void testAdd_TwoNegativeNumbers_returnLessThanZero(){
-        //act
+        //Act
         double sum = calculatorModel.add(-4,-5);
-        //assert
-        Assertions.assertEquals(-9,sum);
+        //Assert
+        Assertions.assertEquals(-9,sum,"Adding two numbers");
     }
 
     @Test
     @DisplayName("Subtracting two numbers")
     void testSubtract_TwoValidNumbers_returnDifference(){
 
-        // act
+        // Act
         double difference = calculatorModel.subtract(4,5);
 
-        // assert
+        // Assert
         Assertions.assertEquals(-1,difference);
 
     }
@@ -47,10 +47,10 @@ public class CalculatorModelTest {
     @DisplayName("Multiplying two numbers")
     void testMultiply_TwoValidNumbers_returnProduct(){
 
-        // act
+        // Act
         double product = calculatorModel.multiply(4,5);
 
-        // assert
+        // Assert
         Assertions.assertEquals(20,product);
     }
 }
