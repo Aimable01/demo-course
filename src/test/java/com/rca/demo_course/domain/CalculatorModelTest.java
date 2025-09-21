@@ -1,14 +1,21 @@
 package com.rca.demo_course.domain;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.*;
 
+@Slf4j
 public class CalculatorModelTest {
+
+    // when, given, return
 
     // Arrange
     private CalculatorModel calculatorModel;
+
+    @BeforeAll
+     static void setupBeforeClass(){
+        log.info("Setup before class");
+    }
+
     @BeforeEach
     public void setUp() {
         calculatorModel = new CalculatorModel();
