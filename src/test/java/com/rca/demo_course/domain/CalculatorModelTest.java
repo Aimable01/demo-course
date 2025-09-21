@@ -25,4 +25,31 @@ public class CalculatorModelTest {
         //assert
         Assertions.assertEquals(-9,sum);
     }
+
+    @Test
+    @DisplayName("Subtracting two numbers")
+    void testSubtract_TwoValidNumbers_returnDifference(){
+        // arrange
+        CalculatorModel calculatorModel = new CalculatorModel();
+
+        // act
+        double difference = calculatorModel.subtract(4,5);
+
+        // assert
+        Assertions.assertEquals(-1,difference);
+
+    }
+
+    @Test
+    @DisplayName("Multiplying two numbers")
+    void testMultiply_TwoValidNumbers_returnProduct(){
+        // arrange
+        CalculatorModel calculatorModel = new CalculatorModel();
+
+        // act
+        double product = calculatorModel.multiply(4,5);
+
+        // assert
+        Assertions.assertEquals(20,product);
+    }
 }

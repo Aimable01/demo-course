@@ -7,12 +7,12 @@ public class CalculatorModel {
     }
 
 
-    private double subtract(double a, double b) {
+    public double subtract(double a, double b) {
         return a - b;
     }
 
 
-    private double multiply(double a, double b) {
+    public double multiply(double a, double b) {
         return a * b;
     }
 
