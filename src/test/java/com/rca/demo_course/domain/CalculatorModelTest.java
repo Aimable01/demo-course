@@ -53,4 +53,14 @@ public class CalculatorModelTest {
         // Assert
         Assertions.assertEquals(20,product);
     }
+
+    @Test
+    @DisplayName("Diving two numbers")
+    void testDiv_TwoValidNumbers_returnDivision(){
+        // Act
+        double res = calculatorModel.divide(10,2);
+
+        // Assert
+        Assertions.assertEquals(5,res);
+    }
 }
