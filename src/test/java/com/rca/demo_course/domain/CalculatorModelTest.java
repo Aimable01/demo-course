@@ -1,15 +1,22 @@
 package com.rca.demo_course.domain;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class CalculatorModelTest {
+
+    // arrange
+    private CalculatorModel calculatorModel;
+    @BeforeEach
+    public void setUp() {
+        calculatorModel = new CalculatorModel();
+    }
+
     @Test
     @DisplayName("Adding two valid number")
     void testAdd_TwoValidNumbers_returnSum(){
-        //Arrange
-        CalculatorModel calculatorModel = new CalculatorModel();
         //Act
         double sum = calculatorModel.add(4,5);
         //Assert
@@ -18,8 +25,6 @@ public class CalculatorModelTest {
     @Test
     @DisplayName("Adding negative numbers")
     void testAdd_TwoNegativeNumbers_returnLessThanZero(){
-        //arrange
-        CalculatorModel calculatorModel = new CalculatorModel();
         //act
         double sum = calculatorModel.add(-4,-5);
         //assert
@@ -29,8 +34,6 @@ public class CalculatorModelTest {
     @Test
     @DisplayName("Subtracting two numbers")
     void testSubtract_TwoValidNumbers_returnDifference(){
-        // arrange
-        CalculatorModel calculatorModel = new CalculatorModel();
 
         // act
         double difference = calculatorModel.subtract(4,5);
@@ -43,8 +46,6 @@ public class CalculatorModelTest {
     @Test
     @DisplayName("Multiplying two numbers")
     void testMultiply_TwoValidNumbers_returnProduct(){
-        // arrange
-        CalculatorModel calculatorModel = new CalculatorModel();
 
         // act
         double product = calculatorModel.multiply(4,5);
