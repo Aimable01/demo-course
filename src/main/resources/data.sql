@@ -6,7 +6,8 @@ INSERT INTO students (first_name, last_name, email) VALUES
 ('Jane', 'Smith', 'jane.smith@example.com'),
 ('Mike', 'Johnson', 'mike.johnson@example.com'),
 ('Sarah', 'Wilson', 'sarah.wilson@example.com'),
-('David', 'Brown', 'david.brown@example.com');
+('David', 'Brown', 'david.brown@example.com')
+ON CONFLICT (email) DO NOTHING;
 
 -- Insert sample courses
 INSERT INTO courses (name, code, credits) VALUES 
@@ -17,7 +18,8 @@ INSERT INTO courses (name, code, credits) VALUES
 ('Computer Networks', 'CS501', 3),
 ('Operating Systems', 'CS601', 4),
 ('Web Development', 'CS701', 3),
-('Machine Learning', 'CS801', 4);
+('Machine Learning', 'CS801', 4)
+ON CONFLICT (code) DO NOTHING;
 
 -- Insert sample grades
 INSERT INTO grades (student_id, course_id, score, letter_grade) VALUES 
@@ -35,5 +37,6 @@ INSERT INTO grades (student_id, course_id, score, letter_grade) VALUES
 (4, 6, 93.5, 'A'),
 (5, 1, 68.0, 'D'),
 (5, 3, 75.5, 'C'),
-(5, 7, 82.0, 'B');
+(5, 7, 82.0, 'B')
+ON CONFLICT (student_id, course_id) DO NOTHING;
 

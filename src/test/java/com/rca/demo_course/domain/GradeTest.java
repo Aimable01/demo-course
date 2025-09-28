@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigDecimal;
+
 @DisplayName("Grade Model Tests")
 public class GradeTest {
 
@@ -16,7 +18,7 @@ public class GradeTest {
         student.setId(1L);
         Course course = new Course();
         course.setId(1L);
-        Double score = 85.5;
+        BigDecimal score = new BigDecimal("85.5");
         String letterGrade = "B";
 
         // Act
@@ -32,7 +34,7 @@ public class GradeTest {
         assertEquals(id, grade.getId());
         assertEquals(student, grade.getStudent());
         assertEquals(course, grade.getCourse());
-        assertEquals(score, grade.getScore(), 0.001);
+        assertEquals(score, grade.getScore());
         assertEquals(letterGrade, grade.getLetterGrade());
     }
 
@@ -47,7 +49,7 @@ public class GradeTest {
         assertNull(grade.getId());
         assertNull(grade.getStudent());
         assertNull(grade.getCourse());
-        assertEquals(0.0, grade.getScore(), 0.001);
+        assertNull(grade.getScore());
         assertNull(grade.getLetterGrade());
     }
 
@@ -61,7 +63,7 @@ public class GradeTest {
         student.setId(2L);
         Course course = new Course();
         course.setId(2L);
-        Double score = 92.0;
+        BigDecimal score = new BigDecimal("92.0");
         String letterGrade = "A";
 
         // Act
@@ -75,7 +77,7 @@ public class GradeTest {
         assertEquals(id, grade.getId());
         assertEquals(student, grade.getStudent());
         assertEquals(course, grade.getCourse());
-        assertEquals(score, grade.getScore(), 0.001);
+        assertEquals(score, grade.getScore());
         assertEquals(letterGrade, grade.getLetterGrade());
     }
 
@@ -91,11 +93,11 @@ public class GradeTest {
         course.setId(1L);
         grade.setStudent(student);
         grade.setCourse(course);
-        grade.setScore(100.0);
+        grade.setScore(new BigDecimal("100.0"));
         grade.setLetterGrade("A");
 
         // Assert
-        assertEquals(100.0, grade.getScore(), 0.001);
+        assertEquals(new BigDecimal("100.0"), grade.getScore());
         assertEquals("A", grade.getLetterGrade());
     }
 
@@ -111,11 +113,11 @@ public class GradeTest {
         course.setId(1L);
         grade.setStudent(student);
         grade.setCourse(course);
-        grade.setScore(45.0);
+        grade.setScore(new BigDecimal("45.0"));
         grade.setLetterGrade("F");
 
         // Assert
-        assertEquals(45.0, grade.getScore(), 0.001);
+        assertEquals(new BigDecimal("45.0"), grade.getScore());
         assertEquals("F", grade.getLetterGrade());
     }
 
@@ -131,11 +133,11 @@ public class GradeTest {
         course.setId(1L);
         grade.setStudent(student);
         grade.setCourse(course);
-        grade.setScore(87.5);
+        grade.setScore(new BigDecimal("87.5"));
         grade.setLetterGrade("B");
 
         // Assert
-        assertEquals(87.5, grade.getScore(), 0.001);
+        assertEquals(new BigDecimal("87.5"), grade.getScore());
         assertEquals("B", grade.getLetterGrade());
     }
 
@@ -151,7 +153,7 @@ public class GradeTest {
         course.setId(1L);
         grade.setStudent(student);
         grade.setCourse(course);
-        grade.setScore(85.5);
+        grade.setScore(new BigDecimal("85.5"));
         grade.setLetterGrade("B");
 
         // Act

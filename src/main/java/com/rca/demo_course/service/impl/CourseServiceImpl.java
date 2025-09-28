@@ -37,8 +37,7 @@ public class CourseServiceImpl implements CourseService {
         if (courseRepository.existsByCode(course.getCode())) {
             throw new DuplicateResourceException("Course code already exists: " + course.getCode());
         }
-
-        return courseRepository.save(course);
+         return courseRepository.save(course);
     }
 
     @Override

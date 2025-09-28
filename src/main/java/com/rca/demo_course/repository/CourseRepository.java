@@ -20,7 +20,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     
     @Query("SELECT c FROM Course c WHERE c.credits >= :minCredits")
     List<Course> findByCreditsGreaterThanEqual(@Param("minCredits") Integer minCredits);
-    
+
     boolean existsByCode(String code);
 }
 

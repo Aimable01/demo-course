@@ -1,29 +1,38 @@
 package com.rca.demo_course.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
+
+@Schema(description = "Grade information for a student in a specific course")
 public class GradeDTO {
 
+    @Schema(description = "Unique identifier for the grade", example = "1")
     private Long id;
 
     @NotNull(message = "Student ID is required")
+    @Schema(description = "ID of the student", required = true, example = "1")
     private Long studentId;
 
     @NotNull(message = "Course ID is required")
+    @Schema(description = "ID of the course", required = true, example = "1")
     private Long courseId;
 
     @NotNull(message = "Score is required")
     @DecimalMin(value = "0.0", message = "Score must be at least 0")
     @DecimalMax(value = "100.0", message = "Score must be at most 100")
-    private Double score;
+    @Schema(description = "Numerical score (0-100)", required = true, example = "85.5", minimum = "0.0", maximum = "100.0")
+    private BigDecimal score;
 
+    @Schema(description = "Letter grade (A, B, C, D, F)", example = "B")
     private String letterGrade;
 
     public GradeDTO() {}
 
-    public GradeDTO(Long id, Long studentId, Long courseId, Double score, String letterGrade) {
+    public GradeDTO(Long id, Long studentId, Long courseId, BigDecimal score, String letterGrade) {
         this.id = id;
         this.studentId = studentId;
         this.courseId = courseId;
@@ -56,11 +65,11 @@ public class GradeDTO {
         this.courseId = courseId;
     }
 
-    public Double getScore() {
+    public BigDecimal getScore() {
         return score;
     }
 
-    public void setScore(Double score) {
+    public void setScore(BigDecimal score) {
         this.score = score;
     }
 

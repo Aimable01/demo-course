@@ -42,7 +42,7 @@ public class CourseTest {
         assertNull(course.getId());
         assertNull(course.getName());
         assertNull(course.getCode());
-        assertEquals(0, course.getCredits());
+        assertNull(course.getCredits());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class CourseTest {
     @DisplayName("Should handle zero credits")
     void testZeroCredits() {
         // Arrange & Act
-        Course course = new Course(1L, "Workshop", "WS001", 0);
+        Course course = new Course(1L, "Workshop", "WS001", 0, null);
 
         // Assert
         assertEquals(0, course.getCredits());
@@ -82,7 +82,7 @@ public class CourseTest {
     @DisplayName("Should handle large credit values")
     void testLargeCredits() {
         // Arrange & Act
-        Course course = new Course(1L, "Thesis", "TH999", 6);
+        Course course = new Course(1L, "Thesis", "TH999", 6, null);
 
         // Assert
         assertEquals(6, course.getCredits());
@@ -92,7 +92,7 @@ public class CourseTest {
     @DisplayName("Should generate correct toString")
     void testToString() {
         // Arrange
-        Course course = new Course(1L, "Introduction to Programming", "CS101", 3);
+        Course course = new Course(1L, "Introduction to Programming", "CS101", 3, null);
 
         // Act
         String result = course.toString();

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,8 +44,8 @@ public class GradeServiceImpl implements GradeService {
         if (grade.getCourse() == null) {
             throw new ValidationException("Course cannot be null");
         }
-        if (grade.getScore() == null || grade.getScore() < 0 || grade.getScore() > 100) {
-            throw new InvalidGradeException(grade.getScore());
+        if (grade.getScore() == null || grade.getScore().compareTo(BigDecimal.ZERO) < 0 || grade.getScore().compareTo(new BigDecimal("100")) > 0) {
+            throw new InvalidGradeException(grade.getScore().doubleValue());
         }
 
         // Verify student and course exist
@@ -55,7 +56,7 @@ public class GradeServiceImpl implements GradeService {
             throw new CourseNotFoundException(grade.getCourse().getId());
         }
 
-        grade.setLetterGrade(calculateLetterGrade(grade.getScore()));
+        grade.setLetterGrade(calculateLetterGrade(grade.getScore().doubleValue()));
         return gradeRepository.save(grade);
     }
 
@@ -110,11 +111,11 @@ public class GradeServiceImpl implements GradeService {
         if (!gradeRepository.existsById(grade.getId())) {
             throw new GradeNotFoundException(grade.getId());
         }
-        if (grade.getScore() == null || grade.getScore() < 0 || grade.getScore() > 100) {
-            throw new InvalidGradeException(grade.getScore());
+        if (grade.getScore() == null || grade.getScore().compareTo(BigDecimal.ZERO) < 0 || grade.getScore().compareTo(new BigDecimal("100")) > 0) {
+            throw new InvalidGradeException(grade.getScore().doubleValue());
         }
 
-        grade.setLetterGrade(calculateLetterGrade(grade.getScore()));
+        grade.setLetterGrade(calculateLetterGrade(grade.getScore().doubleValue()));
         return gradeRepository.save(grade);
     }
 

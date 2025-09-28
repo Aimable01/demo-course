@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "grades")
 @Data
@@ -33,7 +35,7 @@ public class Grade {
     @DecimalMin(value = "0.0", message = "Score must be at least 0")
     @DecimalMax(value = "100.0", message = "Score must be at most 100")
     @Column(name = "score", nullable = false, precision = 5, scale = 2)
-    private Double score;
+    private BigDecimal score;
 
     @Column(name = "letter_grade", length = 2)
     private String letterGrade;
