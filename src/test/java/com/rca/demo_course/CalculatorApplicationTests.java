@@ -245,3 +245,4 @@ public class CalculatorApplicationTests {
         assertEquals(0.0, response3.getBody().get("result"));
     }
 }
+

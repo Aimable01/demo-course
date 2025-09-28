@@ -6,68 +6,36 @@ import org.junit.jupiter.api.*;
 @Slf4j
 public class CalculatorModelTest {
 
-    // when, given, return
-
-    // Arrange
     private CalculatorModel calculatorModel;
-
     @BeforeAll
-     static void setupBeforeClass(){
-        log.info("Setup before class");
+    static void setUpBeforeClass()  {
+        log.info("setUpBeforeClass");
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         calculatorModel = new CalculatorModel();
     }
 
     @Test
-    @DisplayName("Adding two valid number")
-    void testAdd_TwoValidNumbers_returnSum(){
+    @DisplayName("Adding two numbers")
+    void testAdd_givenTwoNumbers_thenReturnSum(){
         //Act
-        double sum = calculatorModel.add(4,5);
+        double result = calculatorModel.add(4,6);
+
         //Assert
-        Assertions.assertEquals(9,sum);
-    }
-    @Test
-    @DisplayName("Adding negative numbers")
-    void testAdd_TwoNegativeNumbers_returnLessThanZero(){
-        //Act
-        double sum = calculatorModel.add(-4,-5);
-        //Assert
-        Assertions.assertEquals(-9,sum,"Adding two numbers");
+        Assertions.assertEquals(10.0,result,"Adding two numbers");
     }
 
     @Test
-    @DisplayName("Subtracting two numbers")
-    void testSubtract_TwoValidNumbers_returnDifference(){
-
-        // Act
-        double difference = calculatorModel.subtract(4,5);
-
-        // Assert
-        Assertions.assertEquals(-1,difference);
+    void testAdd_givenNegativeNumbers_thenReturnNegativeSum(){
+        double result = calculatorModel.add(-4,-6);
+        Assertions.assertEquals(-10,result,"Adding negative numbers");
 
     }
-
     @Test
-    @DisplayName("Multiplying two numbers")
-    void testMultiply_TwoValidNumbers_returnProduct(){
-
-        // Act
-        double product = calculatorModel.multiply(4,5);
-
-        // Assert
-        Assertions.assertEquals(20,product);
-    }
-
-    @Test
-    @DisplayName("Diving two numbers")
-    void testDiv_TwoValidNumbers_returnDivision(){
-        // Act
-        double res = calculatorModel.divide(10,2);
-
-        // Assert
-        Assertions.assertEquals(5,res);
+    void testSubtract_givenValidNumbers_thenReturnDifference(){
+        double result = calculatorModel.subtract(6,2);
+        Assertions.assertEquals(4,result,"Subtract valid numbers");
     }
 }

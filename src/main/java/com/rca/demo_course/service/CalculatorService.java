@@ -78,3 +78,4 @@ public interface CalculatorService {
      */
     double percentage(double number, double percentage);
 }
+

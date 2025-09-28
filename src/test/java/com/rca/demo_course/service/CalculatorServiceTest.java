@@ -152,3 +152,4 @@ public class CalculatorServiceTest {
         assertTrue(Double.isNaN(calculatorService.absolute(Double.NaN)));
     }
 }
+

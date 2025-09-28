@@ -56,3 +56,4 @@ public class CalculatorServiceImpl implements CalculatorService {
         return (number * percentage) / 100;
     }
 }
+
