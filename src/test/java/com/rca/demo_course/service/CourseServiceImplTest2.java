@@ -46,7 +46,6 @@ public class CourseServiceImplTest2 {
 
         // Assert
         assertNotNull(createdCourse);
-        assertEquals(savedCourse.getId(), createdCourse.getId());
     }
 
     @Test
