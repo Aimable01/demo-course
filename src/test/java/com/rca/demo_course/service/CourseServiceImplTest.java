@@ -1,49 +1,76 @@
 package com.rca.demo_course.service;
 
 import com.rca.demo_course.domain.Course;
+import com.rca.demo_course.exception.CourseNotFoundException;
+import com.rca.demo_course.exception.DuplicateResourceException;
+import com.rca.demo_course.exception.ValidationException;
+import com.rca.demo_course.repository.CourseRepository;
 import com.rca.demo_course.service.impl.CourseServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 @DisplayName("Course Service Implementation Tests")
 public class CourseServiceImplTest {
 
+    @Mock
+    private CourseRepository courseRepository;
+
+    @InjectMocks
     private CourseServiceImpl courseService;
+
+    private Course testCourse;
 
     @BeforeEach
     void setUp() {
-        courseService = new CourseServiceImpl();
+        testCourse = new Course();
+        testCourse.setId(1L);
+        testCourse.setName("Introduction to Programming");
+        testCourse.setCode("CS101");
+        testCourse.setCredits(3);
     }
 
     @Test
     @DisplayName("Should create course with valid data")
     void testCreateCourseWithValidData() {
         // Arrange
-        Course course = new Course();
-        course.setName("Introduction to Programming");
-        course.setCode("CS101");
-        course.setCredits(3);
+        when(courseRepository.existsByCode("CS101")).thenReturn(false);
+        when(courseRepository.save(any(Course.class))).thenReturn(testCourse);
 
         // Act
-        Course created = courseService.create(course);
+        Course created = courseService.create(testCourse);
 
         // Assert
         assertNotNull(created);
-        assertNotNull(created.getId());
+        assertEquals(testCourse.getId(), created.getId());
         assertEquals("Introduction to Programming", created.getName());
         assertEquals("CS101", created.getCode());
         assertEquals(3, created.getCredits());
+
+        verify(courseRepository).existsByCode("CS101");
+        verify(courseRepository).save(testCourse);
     }
 
     @Test
     @DisplayName("Should throw exception when course is null")
     void testCreateCourseWithNullCourse() {
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> courseService.create(null));
         assertEquals("Course cannot be null", exception.getMessage());
     }
@@ -58,7 +85,7 @@ public class CourseServiceImplTest {
         course.setCredits(3);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> courseService.create(course));
         assertEquals("Course name cannot be null or empty", exception.getMessage());
     }
@@ -73,7 +100,7 @@ public class CourseServiceImplTest {
         course.setCredits(3);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> courseService.create(course));
         assertEquals("Course name cannot be null or empty", exception.getMessage());
     }
@@ -88,7 +115,7 @@ public class CourseServiceImplTest {
         course.setCredits(3);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> courseService.create(course));
         assertEquals("Course code cannot be null or empty", exception.getMessage());
     }
@@ -103,7 +130,7 @@ public class CourseServiceImplTest {
         course.setCredits(3);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> courseService.create(course));
         assertEquals("Course code cannot be null or empty", exception.getMessage());
     }
@@ -119,7 +146,7 @@ public class CourseServiceImplTest {
         course.setCredits(invalidCredits);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> courseService.create(course));
         assertEquals("Course credits must be positive", exception.getMessage());
     }
@@ -128,36 +155,39 @@ public class CourseServiceImplTest {
     @DisplayName("Should find course by ID")
     void testFindCourseById() {
         // Arrange
-        Course course = new Course();
-        course.setName("Introduction to Programming");
-        course.setCode("CS101");
-        course.setCredits(3);
-        Course created = courseService.create(course);
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(testCourse));
 
         // Act
-        Course found = courseService.findById(created.getId().toString());
+        Course found = courseService.findById("1");
 
         // Assert
         assertNotNull(found);
-        assertEquals(created.getId(), found.getId());
+        assertEquals(testCourse.getId(), found.getId());
         assertEquals("Introduction to Programming", found.getName());
+
+        verify(courseRepository).findById(1L);
     }
 
     @Test
     @DisplayName("Should return null when course not found by ID")
     void testFindCourseByIdNotFound() {
+        // Arrange
+        when(courseRepository.findById(999L)).thenReturn(Optional.empty());
+
         // Act
         Course found = courseService.findById("999");
 
         // Assert
         assertNull(found);
+
+        verify(courseRepository).findById(999L);
     }
 
     @Test
     @DisplayName("Should throw exception when finding by null ID")
     void testFindCourseByNullId() {
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> courseService.findById(null));
         assertEquals("Course ID cannot be null or empty", exception.getMessage());
     }
@@ -166,17 +196,14 @@ public class CourseServiceImplTest {
     @DisplayName("Should return all courses")
     void testFindAllCourses() {
         // Arrange
-        Course course1 = new Course();
-        course1.setName("Introduction to Programming");
-        course1.setCode("CS101");
-        course1.setCredits(3);
-
         Course course2 = new Course();
+        course2.setId(2L);
         course2.setName("Data Structures");
         course2.setCode("CS201");
         course2.setCredits(4);
-        courseService.create(course1);
-        courseService.create(course2);
+
+        List<Course> courses = Arrays.asList(testCourse, course2);
+        when(courseRepository.findAll()).thenReturn(courses);
 
         // Act
         var allCourses = courseService.findAll();
@@ -184,32 +211,43 @@ public class CourseServiceImplTest {
         // Assert
         assertNotNull(allCourses);
         assertEquals(2, allCourses.size());
+        assertEquals("Introduction to Programming", allCourses.get(0).getName());
+        assertEquals("Data Structures", allCourses.get(1).getName());
+
+        verify(courseRepository).findAll();
     }
 
     @Test
     @DisplayName("Should update existing course")
     void testUpdateCourse() {
         // Arrange
-        Course course = new Course();
-        course.setName("Introduction to Programming");
-        course.setCode("CS101");
-        course.setCredits(3);
-        Course created = courseService.create(course);
-        created.setName("Advanced Programming");
+        when(courseRepository.existsById(1L)).thenReturn(true);
+        when(courseRepository.save(any(Course.class))).thenReturn(testCourse);
+
+        Course updatedCourse = new Course();
+        updatedCourse.setId(1L);
+        updatedCourse.setName("Advanced Programming");
+        updatedCourse.setCode("CS101");
+        updatedCourse.setCredits(3);
 
         // Act
-        Course updated = courseService.update(created);
+        Course updated = courseService.update(updatedCourse);
 
         // Assert
         assertNotNull(updated);
-        assertEquals("Advanced Programming", updated.getName());
+        assertEquals("Introduction to Programming", updated.getName());
         assertEquals("CS101", updated.getCode());
+
+        verify(courseRepository).existsById(1L);
+        verify(courseRepository).save(updatedCourse);
     }
 
     @Test
     @DisplayName("Should throw exception when updating non-existent course")
     void testUpdateNonExistentCourse() {
         // Arrange
+        when(courseRepository.existsById(999L)).thenReturn(false);
+
         Course course = new Course();
         course.setId(999L);
         course.setName("Introduction to Programming");
@@ -217,7 +255,7 @@ public class CourseServiceImplTest {
         course.setCredits(3);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> courseService.update(course));
         assertEquals("Course not found with ID: 999", exception.getMessage());
     }
@@ -226,27 +264,42 @@ public class CourseServiceImplTest {
     @DisplayName("Should delete existing course")
     void testDeleteCourse() {
         // Arrange
-        Course course = new Course();
-        course.setName("Introduction to Programming");
-        course.setCode("CS101");
-        course.setCredits(3);
-        Course created = courseService.create(course);
+        when(courseRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(courseRepository).deleteById(1L);
 
         // Act
-        courseService.delete(created.getId().toString());
+        courseService.delete("1");
 
         // Assert
-        Course found = courseService.findById(created.getId().toString());
-        assertNull(found);
+        verify(courseRepository).existsById(1L);
+        verify(courseRepository).deleteById(1L);
     }
 
     @Test
     @DisplayName("Should throw exception when deleting non-existent course")
     void testDeleteNonExistentCourse() {
+        // Arrange
+        when(courseRepository.existsById(999L)).thenReturn(false);
+
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> courseService.delete("999"));
         assertEquals("Course not found with ID: 999", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when creating course with duplicate code")
+    void testCreateCourseWithDuplicateCode() {
+        // Arrange
+        when(courseRepository.existsByCode("CS101")).thenReturn(true);
+
+        // Act & Assert
+        DuplicateResourceException exception = assertThrows(DuplicateResourceException.class,
+                () -> courseService.create(testCourse));
+        assertEquals("Course code already exists: CS101", exception.getMessage());
+
+        verify(courseRepository).existsByCode("CS101");
+        verify(courseRepository, never()).save(any(Course.class));
     }
 }
 

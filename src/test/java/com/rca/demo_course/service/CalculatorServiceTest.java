@@ -67,8 +67,8 @@ public class CalculatorServiceTest {
         // Test power of 0
         assertEquals(1.0, calculatorService.power(0.0, 0.0), 0.001);
 
-        // Test power with NaN
-        assertTrue(Double.isNaN(calculatorService.power(0.0, -1.0)));
+        // Test power with negative exponent on zero (0^-1 = 1/0 = infinity)
+        assertTrue(Double.isInfinite(calculatorService.power(0.0, -1.0)));
 
         // Test power with infinity
         assertTrue(Double.isInfinite(calculatorService.power(2.0, Double.MAX_VALUE)));

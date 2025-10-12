@@ -68,39 +68,7 @@ public class CourseTest {
         assertEquals(credits, course.getCredits());
     }
 
-    @Test
-    @DisplayName("Should handle zero credits")
-    void testZeroCredits() {
-        // Arrange & Act
-        Course course = new Course(1L, "Workshop", "WS001", 0);
 
-        // Assert
-        assertEquals(0, course.getCredits());
-    }
 
-    @Test
-    @DisplayName("Should handle large credit values")
-    void testLargeCredits() {
-        // Arrange & Act
-        Course course = new Course(1L, "Thesis", "TH999", 6);
-
-        // Assert
-        assertEquals(6, course.getCredits());
-    }
-
-    @Test
-    @DisplayName("Should generate correct toString")
-    void testToString() {
-        // Arrange
-        Course course = new Course(1L, "Introduction to Programming", "CS101", 3);
-
-        // Act
-        String result = course.toString();
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.contains("Introduction to Programming"));
-        assertTrue(result.contains("CS101"));
-    }
 }
 

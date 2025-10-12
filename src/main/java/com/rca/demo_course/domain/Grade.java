@@ -32,7 +32,7 @@ public class Grade {
     @NotNull(message = "Score is required")
     @DecimalMin(value = "0.0", message = "Score must be at least 0")
     @DecimalMax(value = "100.0", message = "Score must be at most 100")
-    @Column(name = "score", nullable = false, precision = 5, scale = 2)
+    @Column(name = "score", nullable = false, columnDefinition = "DECIMAL(5,2)")
     private Double score;
 
     @Column(name = "letter_grade", length = 2)

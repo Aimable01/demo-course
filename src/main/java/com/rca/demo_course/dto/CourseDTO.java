@@ -63,3 +63,4 @@ public class CourseDTO {
         this.credits = credits;
     }
 }
+

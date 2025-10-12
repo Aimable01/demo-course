@@ -11,16 +11,17 @@ import java.util.Optional;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    
+
     Optional<Course> findByCode(String code);
-    
+
     List<Course> findByNameContainingIgnoreCase(String name);
-    
+
     List<Course> findByCredits(Integer credits);
-    
+
     @Query("SELECT c FROM Course c WHERE c.credits >= :minCredits")
     List<Course> findByCreditsGreaterThanEqual(@Param("minCredits") Integer minCredits);
-    
+
     boolean existsByCode(String code);
 }
+
 

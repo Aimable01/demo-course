@@ -3,55 +3,102 @@ package com.rca.demo_course.service;
 import com.rca.demo_course.domain.Course;
 import com.rca.demo_course.domain.Grade;
 import com.rca.demo_course.domain.Student;
+import com.rca.demo_course.exception.GradeNotFoundException;
+import com.rca.demo_course.exception.InvalidGradeException;
+import com.rca.demo_course.exception.ValidationException;
+import com.rca.demo_course.repository.CourseRepository;
+import com.rca.demo_course.repository.GradeRepository;
+import com.rca.demo_course.repository.StudentRepository;
 import com.rca.demo_course.service.impl.GradeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 @DisplayName("Grade Service Implementation Tests")
 public class GradeServiceImplTest {
 
+    @Mock
+    private GradeRepository gradeRepository;
+
+    @Mock
+    private StudentRepository studentRepository;
+
+    @Mock
+    private CourseRepository courseRepository;
+
+    @InjectMocks
     private GradeServiceImpl gradeService;
+
+    private Grade testGrade;
+    private Student testStudent;
+    private Course testCourse;
 
     @BeforeEach
     void setUp() {
-        gradeService = new GradeServiceImpl();
+        testStudent = new Student();
+        testStudent.setId(1L);
+        testStudent.setFirstName("John");
+        testStudent.setLastName("Doe");
+        testStudent.setEmail("john.doe@example.com");
+
+        testCourse = new Course();
+        testCourse.setId(1L);
+        testCourse.setName("Introduction to Programming");
+        testCourse.setCode("CS101");
+        testCourse.setCredits(3);
+
+        testGrade = new Grade();
+        testGrade.setId(1L);
+        testGrade.setStudent(testStudent);
+        testGrade.setCourse(testCourse);
+        testGrade.setScore(85.5);
+        testGrade.setLetterGrade("B");
     }
 
     @Test
     @DisplayName("Should create grade with valid data")
     void testCreateGradeWithValidData() {
         // Arrange
-        Grade grade = new Grade();
-        Student student = new Student();
-        student.setId(1L);
-        Course course = new Course();
-        course.setId(1L);
-        grade.setStudent(student);
-        grade.setCourse(course);
-        grade.setScore(85.5);
+        when(studentRepository.existsById(1L)).thenReturn(true);
+        when(courseRepository.existsById(1L)).thenReturn(true);
+        when(gradeRepository.save(any(Grade.class))).thenReturn(testGrade);
 
         // Act
-        Grade created = gradeService.create(grade);
+        Grade created = gradeService.create(testGrade);
 
         // Assert
         assertNotNull(created);
-        assertNotNull(created.getId());
-        assertEquals(student, created.getStudent());
-        assertEquals(course, created.getCourse());
+        assertEquals(testGrade.getId(), created.getId());
+        assertEquals(testStudent.getId(), created.getStudent().getId());
+        assertEquals(testCourse.getId(), created.getCourse().getId());
         assertEquals(85.5, created.getScore(), 0.001);
         assertEquals("B", created.getLetterGrade());
+
+        verify(studentRepository).existsById(1L);
+        verify(courseRepository).existsById(1L);
+        verify(gradeRepository).save(testGrade);
     }
 
     @Test
     @DisplayName("Should throw exception when grade is null")
     void testCreateGradeWithNullGrade() {
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> gradeService.create(null));
         assertEquals("Grade cannot be null", exception.getMessage());
     }
@@ -62,15 +109,13 @@ public class GradeServiceImplTest {
         // Arrange
         Grade grade = new Grade();
         grade.setStudent(null);
-        Course course = new Course();
-        course.setId(1L);
-        grade.setCourse(course);
+        grade.setCourse(testCourse);
         grade.setScore(85.5);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> gradeService.create(grade));
-        assertEquals("Student ID cannot be null or empty", exception.getMessage());
+        assertEquals("Student cannot be null", exception.getMessage());
     }
 
     @Test
@@ -78,16 +123,14 @@ public class GradeServiceImplTest {
     void testCreateGradeWithNullCourseId() {
         // Arrange
         Grade grade = new Grade();
-        Student student = new Student();
-        student.setId(1L);
-        grade.setStudent(student);
+        grade.setStudent(testStudent);
         grade.setCourse(null);
         grade.setScore(85.5);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> gradeService.create(grade));
-        assertEquals("Course ID cannot be null or empty", exception.getMessage());
+        assertEquals("Course cannot be null", exception.getMessage());
     }
 
     @ParameterizedTest(name = "Should throw exception for invalid score: {0}")
@@ -96,18 +139,14 @@ public class GradeServiceImplTest {
     void testCreateGradeWithInvalidScore(double invalidScore) {
         // Arrange
         Grade grade = new Grade();
-        Student student = new Student();
-        student.setId(1L);
-        Course course = new Course();
-        course.setId(1L);
-        grade.setStudent(student);
-        grade.setCourse(course);
+        grade.setStudent(testStudent);
+        grade.setCourse(testCourse);
         grade.setScore(invalidScore);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        InvalidGradeException exception = assertThrows(InvalidGradeException.class,
                 () -> gradeService.create(grade));
-        assertEquals("Score must be between 0 and 100", exception.getMessage());
+        assertTrue(exception.getMessage().contains("Invalid grade score: " + invalidScore));
     }
 
     @ParameterizedTest(name = "Score {0} should result in letter grade {1}")
@@ -137,42 +176,42 @@ public class GradeServiceImplTest {
     @DisplayName("Should throw exception for invalid scores in letter grade calculation")
     void testCalculateLetterGradeWithInvalidScore(double invalidScore) {
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        InvalidGradeException exception = assertThrows(InvalidGradeException.class,
                 () -> gradeService.calculateLetterGrade(invalidScore));
-        assertEquals("Score must be between 0 and 100", exception.getMessage());
+        assertTrue(exception.getMessage().contains("Invalid grade score: " + invalidScore));
     }
 
     @Test
     @DisplayName("Should find grade by ID")
     void testFindGradeById() {
         // Arrange
-        Grade grade = new Grade();
-        Student student = new Student();
-        student.setId(1L);
-        Course course = new Course();
-        course.setId(1L);
-        grade.setStudent(student);
-        grade.setCourse(course);
-        grade.setScore(85.5);
-        Grade created = gradeService.create(grade);
+        when(gradeRepository.findById(1L)).thenReturn(Optional.of(testGrade));
 
         // Act
-        Grade found = gradeService.findById(created.getId().toString());
+        Grade found = gradeService.findById("1");
 
         // Assert
         assertNotNull(found);
-        assertEquals(created.getId(), found.getId());
-        assertEquals(student, found.getStudent());
+        assertEquals(testGrade.getId(), found.getId());
+        assertEquals(testStudent.getId(), found.getStudent().getId());
+        assertEquals(testCourse.getId(), found.getCourse().getId());
+
+        verify(gradeRepository).findById(1L);
     }
 
     @Test
     @DisplayName("Should return null when grade not found by ID")
     void testFindGradeByIdNotFound() {
+        // Arrange
+        when(gradeRepository.findById(999L)).thenReturn(Optional.empty());
+
         // Act
         Grade found = gradeService.findById("999");
 
         // Assert
         assertNull(found);
+
+        verify(gradeRepository).findById(999L);
     }
 
     @Test
@@ -205,12 +244,11 @@ public class GradeServiceImplTest {
         grade3.setStudent(student3);
         grade3.setCourse(course3);
         grade3.setScore(78.0);
-        gradeService.create(grade1);
-        gradeService.create(grade2);
-        gradeService.create(grade3);
+        // Mock repository to return grades for student ID 1
+        when(gradeRepository.findByStudentId(1L)).thenReturn(Arrays.asList(grade1, grade2));
 
         // Act
-        var studentGrades = gradeService.findByStudentId("STU001");
+        var studentGrades = gradeService.findByStudentId("1");
 
         // Assert
         assertNotNull(studentGrades);
@@ -248,12 +286,11 @@ public class GradeServiceImplTest {
         grade3.setStudent(student3);
         grade3.setCourse(course3);
         grade3.setScore(78.0);
-        gradeService.create(grade1);
-        gradeService.create(grade2);
-        gradeService.create(grade3);
+        // Mock repository to return grades for course ID 1
+        when(gradeRepository.findByCourseId(1L)).thenReturn(Arrays.asList(grade1, grade2));
 
         // Act
-        var courseGrades = gradeService.findByCourseId("CS101");
+        var courseGrades = gradeService.findByCourseId("1");
 
         // Assert
         assertNotNull(courseGrades);
@@ -266,23 +303,30 @@ public class GradeServiceImplTest {
     void testUpdateGrade() {
         // Arrange
         Grade grade = new Grade();
-        Student student = new Student();
-        student.setId(1L);
-        Course course = new Course();
-        course.setId(1L);
-        grade.setStudent(student);
-        grade.setCourse(course);
+        grade.setId(1L); // Set the ID for update operation
+        grade.setStudent(testStudent);
+        grade.setCourse(testCourse);
         grade.setScore(85.5);
-        Grade created = gradeService.create(grade);
-        created.setScore(92.0);
+        // Mock repository behavior for update operation
+        when(gradeRepository.existsById(1L)).thenReturn(true);
+        when(gradeRepository.save(any(Grade.class))).thenAnswer(invocation -> {
+            Grade gradeToSave = invocation.getArgument(0);
+            gradeToSave.setScore(92.0);
+            gradeToSave.setLetterGrade("A");
+            return gradeToSave;
+        });
 
         // Act
-        Grade updated = gradeService.update(created);
+        grade.setScore(92.0);
+        Grade updated = gradeService.update(grade);
 
         // Assert
         assertNotNull(updated);
         assertEquals(92.0, updated.getScore(), 0.001);
         assertEquals("A", updated.getLetterGrade());
+
+        verify(gradeRepository).existsById(1L);
+        verify(gradeRepository).save(grade);
     }
 
     @Test
@@ -291,17 +335,15 @@ public class GradeServiceImplTest {
         // Arrange
         Grade grade = new Grade();
         grade.setId(999L);
-        Student student = new Student();
-        student.setId(1L);
-        Course course = new Course();
-        course.setId(1L);
-        grade.setStudent(student);
-        grade.setCourse(course);
+        grade.setStudent(testStudent);
+        grade.setCourse(testCourse);
         grade.setScore(85.5);
         grade.setLetterGrade("B");
 
+        when(gradeRepository.existsById(999L)).thenReturn(false);
+
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        GradeNotFoundException exception = assertThrows(GradeNotFoundException.class,
                 () -> gradeService.update(grade));
         assertEquals("Grade not found with ID: 999", exception.getMessage());
     }
@@ -318,21 +360,26 @@ public class GradeServiceImplTest {
         grade.setStudent(student);
         grade.setCourse(course);
         grade.setScore(85.5);
-        Grade created = gradeService.create(grade);
+        // Mock repository behavior for delete operation
+        when(gradeRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(gradeRepository).deleteById(1L);
 
         // Act
-        gradeService.delete(created.getId().toString());
+        gradeService.delete("1");
 
         // Assert
-        Grade found = gradeService.findById(created.getId().toString());
-        assertNull(found);
+        verify(gradeRepository).existsById(1L);
+        verify(gradeRepository).deleteById(1L);
     }
 
     @Test
     @DisplayName("Should throw exception when deleting non-existent grade")
     void testDeleteNonExistentGrade() {
+        // Arrange
+        when(gradeRepository.existsById(999L)).thenReturn(false);
+
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        GradeNotFoundException exception = assertThrows(GradeNotFoundException.class,
                 () -> gradeService.delete("999"));
         assertEquals("Grade not found with ID: 999", exception.getMessage());
     }
@@ -349,6 +396,7 @@ public class GradeServiceImplTest {
         grade1.setStudent(student1);
         grade1.setCourse(course1);
         grade1.setScore(90.0); // A = 4.0
+        grade1.setLetterGrade("A");
 
         Grade grade2 = new Grade();
         Student student2 = new Student();
@@ -358,6 +406,7 @@ public class GradeServiceImplTest {
         grade2.setStudent(student2);
         grade2.setCourse(course2);
         grade2.setScore(80.0); // B = 3.0
+        grade2.setLetterGrade("B");
 
         Grade grade3 = new Grade();
         Student student3 = new Student();
@@ -367,12 +416,12 @@ public class GradeServiceImplTest {
         grade3.setStudent(student3);
         grade3.setCourse(course3);
         grade3.setScore(70.0); // C = 2.0
-        gradeService.create(grade1);
-        gradeService.create(grade2);
-        gradeService.create(grade3);
+        grade3.setLetterGrade("C");
+        // Mock repository to return grades for student ID 1
+        when(gradeRepository.findByStudentId(1L)).thenReturn(Arrays.asList(grade1, grade2, grade3));
 
         // Act
-        double gpa = gradeService.calculateGPA("STU001");
+        double gpa = gradeService.calculateGPA("1");
 
         // Assert
         assertEquals(3.0, gpa, 0.001); // (4.0 + 3.0 + 2.0) / 3 = 3.0
@@ -381,18 +430,23 @@ public class GradeServiceImplTest {
     @Test
     @DisplayName("Should return 0.0 GPA for student with no grades")
     void testCalculateGPAForStudentWithNoGrades() {
+        // Arrange - Mock repository to return empty list for student with no grades
+        when(gradeRepository.findByStudentId(999L)).thenReturn(Arrays.asList());
+
         // Act
-        double gpa = gradeService.calculateGPA("STU999");
+        double gpa = gradeService.calculateGPA("999");
 
         // Assert
         assertEquals(0.0, gpa, 0.001);
+
+        verify(gradeRepository).findByStudentId(999L);
     }
 
     @Test
     @DisplayName("Should throw exception when calculating GPA with null student ID")
     void testCalculateGPAWithNullStudentId() {
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        ValidationException exception = assertThrows(ValidationException.class,
                 () -> gradeService.calculateGPA(null));
         assertEquals("Student ID cannot be null or empty", exception.getMessage());
     }

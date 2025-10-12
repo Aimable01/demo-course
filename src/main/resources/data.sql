@@ -1,7 +1,7 @@
 -- Sample data for testing the Course Management System
 
 -- Insert sample students
-INSERT INTO students (first_name, last_name, email) VALUES 
+INSERT INTO students (first_name, last_name, email) VALUES
 ('John', 'Doe', 'john.doe@example.com'),
 ('Jane', 'Smith', 'jane.smith@example.com'),
 ('Mike', 'Johnson', 'mike.johnson@example.com'),
@@ -9,7 +9,7 @@ INSERT INTO students (first_name, last_name, email) VALUES
 ('David', 'Brown', 'david.brown@example.com');
 
 -- Insert sample courses
-INSERT INTO courses (name, code, credits) VALUES 
+INSERT INTO courses (name, code, credits) VALUES
 ('Introduction to Programming', 'CS101', 3),
 ('Data Structures and Algorithms', 'CS201', 4),
 ('Database Systems', 'CS301', 3),
@@ -20,7 +20,7 @@ INSERT INTO courses (name, code, credits) VALUES
 ('Machine Learning', 'CS801', 4);
 
 -- Insert sample grades
-INSERT INTO grades (student_id, course_id, score, letter_grade) VALUES 
+INSERT INTO grades (student_id, course_id, score, letter_grade) VALUES
 (1, 1, 85.5, 'B'),
 (1, 2, 92.0, 'A'),
 (1, 3, 78.5, 'C'),
@@ -36,4 +36,5 @@ INSERT INTO grades (student_id, course_id, score, letter_grade) VALUES
 (5, 1, 68.0, 'D'),
 (5, 3, 75.5, 'C'),
 (5, 7, 82.0, 'B');
+
 
