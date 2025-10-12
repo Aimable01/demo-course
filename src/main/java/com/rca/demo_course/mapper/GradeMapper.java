@@ -21,7 +21,7 @@ public class GradeMapper {
             grade.getId(),
             studentId,
             courseId,
-            grade.getScore(),
+            grade.getScore() != null ? java.math.BigDecimal.valueOf(grade.getScore()) : null,
             grade.getLetterGrade()
         );
     }
@@ -33,7 +33,7 @@ public class GradeMapper {
 
         Grade grade = new Grade();
         grade.setId(gradeDTO.getId());
-        grade.setScore(gradeDTO.getScore());
+        grade.setScore(gradeDTO.getScore() != null ? gradeDTO.getScore().doubleValue() : null);
         grade.setLetterGrade(gradeDTO.getLetterGrade());
 
         // Set student and course references

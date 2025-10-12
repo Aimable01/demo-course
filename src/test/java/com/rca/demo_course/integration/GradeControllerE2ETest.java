@@ -16,6 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
@@ -88,7 +89,7 @@ public class GradeControllerE2ETest {
         GradeDTO newGrade = new GradeDTO();
         newGrade.setStudentId(testStudent.getId());
         newGrade.setCourseId(testCourse.getId());
-        newGrade.setScore(88.5);
+        newGrade.setScore(BigDecimal.valueOf(88.5));
         newGrade.setLetterGrade("B"); // Service will calculate this automatically
 
         ResponseEntity<GradeDTO> createResponse = restTemplate.postForEntity(
@@ -109,14 +110,14 @@ public class GradeControllerE2ETest {
 
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
         assertNotNull(getResponse.getBody());
-        assertEquals(88.5, getResponse.getBody().getScore());
+        assertEquals(0, BigDecimal.valueOf(88.5).compareTo(getResponse.getBody().getScore()));
         System.out.println("✅ Grade retrieved: Score = " + getResponse.getBody().getScore());
 
         // STEP 3: Update the grade
         System.out.println("✏️ Step 3: Updating the grade");
         GradeDTO updatedGrade = getResponse.getBody();
         assertNotNull(updatedGrade);
-        updatedGrade.setScore(92.0);
+        updatedGrade.setScore(BigDecimal.valueOf(92.0));
         updatedGrade.setLetterGrade("A"); // Service will calculate this automatically
 
         HttpEntity<GradeDTO> updateRequest = new HttpEntity<>(updatedGrade, headers);
@@ -125,7 +126,7 @@ public class GradeControllerE2ETest {
 
         assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
         assertNotNull(updateResponse.getBody());
-        assertEquals(92.0, updateResponse.getBody().getScore());
+        assertEquals(0, BigDecimal.valueOf(92.0).compareTo(updateResponse.getBody().getScore()));
         assertEquals("A", updateResponse.getBody().getLetterGrade());
         System.out.println("✅ Grade updated to: Score = " + updateResponse.getBody().getScore() + ", Letter = " + updateResponse.getBody().getLetterGrade());
 
@@ -136,7 +137,7 @@ public class GradeControllerE2ETest {
 
         assertEquals(HttpStatus.OK, verifyResponse.getStatusCode());
         assertNotNull(verifyResponse.getBody());
-        assertEquals(92.0, verifyResponse.getBody().getScore());
+        assertEquals(0, BigDecimal.valueOf(92.0).compareTo(verifyResponse.getBody().getScore()));
         assertEquals("A", verifyResponse.getBody().getLetterGrade());
         System.out.println("✅ Update verified.");
 
@@ -208,7 +209,7 @@ public class GradeControllerE2ETest {
                 GradeDTO grade = new GradeDTO();
                 grade.setStudentId(students[index % 5].getId());
                 grade.setCourseId(courses[index % 3].getId());
-                grade.setScore(70.0 + (index % 30)); // Scores from 70 to 99
+                grade.setScore(BigDecimal.valueOf(70.0 + (index % 30))); // Scores from 70 to 99
                 grade.setLetterGrade("B");
                 return restTemplate.postForEntity(baseUrl, grade, GradeDTO.class);
             }, executor);
@@ -318,9 +319,9 @@ public class GradeControllerE2ETest {
         System.out.println("📝 Step 3: Teacher entering grades for all students");
 
         // Alice's grades
-        GradeDTO aliceGrade1 = new GradeDTO(null, student1.getId(), course1.getId(), 95.0, "A");
-        GradeDTO aliceGrade2 = new GradeDTO(null, student1.getId(), course2.getId(), 88.0, "B");
-        GradeDTO aliceGrade3 = new GradeDTO(null, student1.getId(), course3.getId(), 92.0, "A");
+        GradeDTO aliceGrade1 = new GradeDTO(null, student1.getId(), course1.getId(), new BigDecimal(95.0), "A");
+        GradeDTO aliceGrade2 = new GradeDTO(null, student1.getId(), course2.getId(), new BigDecimal(88.0), "B");
+        GradeDTO aliceGrade3 = new GradeDTO(null, student1.getId(), course3.getId(), new BigDecimal(92.0), "A");
 
         ResponseEntity<GradeDTO> alice1 = restTemplate.postForEntity(baseUrl, aliceGrade1, GradeDTO.class);
         ResponseEntity<GradeDTO> alice2 = restTemplate.postForEntity(baseUrl, aliceGrade2, GradeDTO.class);
@@ -331,9 +332,9 @@ public class GradeControllerE2ETest {
         assertEquals(HttpStatus.CREATED, alice3.getStatusCode());
 
         // Bob's grades
-        GradeDTO bobGrade1 = new GradeDTO(null, student2.getId(), course1.getId(), 78.0, "C");
-        GradeDTO bobGrade2 = new GradeDTO(null, student2.getId(), course2.getId(), 82.0, "B");
-        GradeDTO bobGrade3 = new GradeDTO(null, student2.getId(), course3.getId(), 85.0, "B");
+        GradeDTO bobGrade1 = new GradeDTO(null, student2.getId(), course1.getId(), new BigDecimal(78.0), "C");
+        GradeDTO bobGrade2 = new GradeDTO(null, student2.getId(), course2.getId(), new BigDecimal(82.0), "B");
+        GradeDTO bobGrade3 = new GradeDTO(null, student2.getId(), course3.getId(), new BigDecimal(85.0), "B");
 
         ResponseEntity<GradeDTO> bob1 = restTemplate.postForEntity(baseUrl, bobGrade1, GradeDTO.class);
         ResponseEntity<GradeDTO> bob2 = restTemplate.postForEntity(baseUrl, bobGrade2, GradeDTO.class);
@@ -344,9 +345,9 @@ public class GradeControllerE2ETest {
         assertEquals(HttpStatus.CREATED, bob3.getStatusCode());
 
         // Carol's grades
-        GradeDTO carolGrade1 = new GradeDTO(null, student3.getId(), course1.getId(), 91.0, "A");
-        GradeDTO carolGrade2 = new GradeDTO(null, student3.getId(), course2.getId(), 94.0, "A");
-        GradeDTO carolGrade3 = new GradeDTO(null, student3.getId(), course3.getId(), 89.0, "B");
+        GradeDTO carolGrade1 = new GradeDTO(null, student3.getId(), course1.getId(), new BigDecimal(91.0), "A");
+        GradeDTO carolGrade2 = new GradeDTO(null, student3.getId(), course2.getId(), new BigDecimal(94.0), "A");
+        GradeDTO carolGrade3 = new GradeDTO(null, student3.getId(), course3.getId(), new BigDecimal(89.0), "B");
 
         ResponseEntity<GradeDTO> carol1 = restTemplate.postForEntity(baseUrl, carolGrade1, GradeDTO.class);
         ResponseEntity<GradeDTO> carol2 = restTemplate.postForEntity(baseUrl, carolGrade2, GradeDTO.class);
@@ -403,7 +404,7 @@ public class GradeControllerE2ETest {
         System.out.println("✏️ Step 7: Teacher updating Bob's Data Structures grade");
         GradeDTO updatedBobGrade = bob2.getBody();
         assertNotNull(updatedBobGrade);
-        updatedBobGrade.setScore(85.0);
+        updatedBobGrade.setScore(new BigDecimal(85.0));
         updatedBobGrade.setLetterGrade("B");
 
         HttpEntity<GradeDTO> updateRequest = new HttpEntity<>(updatedBobGrade, headers);
@@ -412,7 +413,7 @@ public class GradeControllerE2ETest {
 
         assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
         assertNotNull(updateResponse.getBody());
-        assertEquals(85.0, updateResponse.getBody().getScore());
+        assertEquals(0, BigDecimal.valueOf(85.0).compareTo(updateResponse.getBody().getScore()));
         assertEquals("B", updateResponse.getBody().getLetterGrade());
         System.out.println("✅ Bob's Data Structures grade updated to B (85.0).");
 

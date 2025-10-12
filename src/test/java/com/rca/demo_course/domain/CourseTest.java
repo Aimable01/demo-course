@@ -42,7 +42,7 @@ public class CourseTest {
         assertNull(course.getId());
         assertNull(course.getName());
         assertNull(course.getCode());
-        assertEquals(0, course.getCredits());
+        assertNull(course.getCredits());
     }
 
     @Test

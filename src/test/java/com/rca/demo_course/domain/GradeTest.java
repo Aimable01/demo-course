@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigDecimal;
+
 @DisplayName("Grade Model Tests")
 public class GradeTest {
 
@@ -32,7 +34,7 @@ public class GradeTest {
         assertEquals(id, grade.getId());
         assertEquals(student, grade.getStudent());
         assertEquals(course, grade.getCourse());
-        assertEquals(score, grade.getScore(), 0.001);
+        assertEquals(score, grade.getScore());
         assertEquals(letterGrade, grade.getLetterGrade());
     }
 
@@ -47,7 +49,7 @@ public class GradeTest {
         assertNull(grade.getId());
         assertNull(grade.getStudent());
         assertNull(grade.getCourse());
-        assertEquals(0.0, grade.getScore(), 0.001);
+        assertNull(grade.getScore());
         assertNull(grade.getLetterGrade());
     }
 
@@ -75,7 +77,7 @@ public class GradeTest {
         assertEquals(id, grade.getId());
         assertEquals(student, grade.getStudent());
         assertEquals(course, grade.getCourse());
-        assertEquals(score, grade.getScore(), 0.001);
+        assertEquals(score, grade.getScore());
         assertEquals(letterGrade, grade.getLetterGrade());
     }
 
@@ -95,7 +97,7 @@ public class GradeTest {
         grade.setLetterGrade("A");
 
         // Assert
-        assertEquals(100.0, grade.getScore(), 0.001);
+        assertEquals(100.0, grade.getScore());
         assertEquals("A", grade.getLetterGrade());
     }
 
@@ -115,7 +117,7 @@ public class GradeTest {
         grade.setLetterGrade("F");
 
         // Assert
-        assertEquals(45.0, grade.getScore(), 0.001);
+        assertEquals(45.0, grade.getScore());
         assertEquals("F", grade.getLetterGrade());
     }
 
@@ -135,7 +137,7 @@ public class GradeTest {
         grade.setLetterGrade("B");
 
         // Assert
-        assertEquals(87.5, grade.getScore(), 0.001);
+        assertEquals(87.5, grade.getScore());
         assertEquals("B", grade.getLetterGrade());
     }
 

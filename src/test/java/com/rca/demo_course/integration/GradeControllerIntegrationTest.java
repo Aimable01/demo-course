@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,7 +99,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setStudentId(testStudent.getId());
         gradeDTO.setCourseId(testCourse.getId());
-        gradeDTO.setScore(85.5);
+        gradeDTO.setScore(BigDecimal.valueOf(85.5));
         gradeDTO.setLetterGrade("B"); // Service will calculate this automatically
 
         // When
@@ -114,7 +115,7 @@ public class GradeControllerIntegrationTest {
         assertNotNull(createdGrade.getId());
         assertEquals(testStudent.getId(), createdGrade.getStudentId());
         assertEquals(testCourse.getId(), createdGrade.getCourseId());
-        assertEquals(85.5, createdGrade.getScore());
+        assertEquals(0, BigDecimal.valueOf(85.5).compareTo(createdGrade.getScore()));
         assertEquals("B", createdGrade.getLetterGrade());
 
         // Verify grade was actually saved in database
@@ -134,7 +135,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO invalidGrade = new GradeDTO();
         invalidGrade.setStudentId(testStudent.getId());
         invalidGrade.setCourseId(testCourse.getId());
-        invalidGrade.setScore(150.0); // Invalid score > 100
+        invalidGrade.setScore(BigDecimal.valueOf(150.0)); // Invalid score > 100
         invalidGrade.setLetterGrade("A+");
 
         // When
@@ -156,7 +157,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO invalidGrade = new GradeDTO();
         invalidGrade.setStudentId(testStudent.getId());
         invalidGrade.setCourseId(testCourse.getId());
-        invalidGrade.setScore(-10.0); // Negative score should fail
+        invalidGrade.setScore(BigDecimal.valueOf(-10.0)); // Negative score should fail
 
         // When
         ResponseEntity<String> response = restTemplate.postForEntity(
@@ -172,7 +173,7 @@ public class GradeControllerIntegrationTest {
         // Given
         GradeDTO invalidGrade = new GradeDTO();
         invalidGrade.setCourseId(testCourse.getId());
-        invalidGrade.setScore(85.0);
+        invalidGrade.setScore(BigDecimal.valueOf(85.0));
 
         // When
         ResponseEntity<String> response = restTemplate.postForEntity(
@@ -208,7 +209,7 @@ public class GradeControllerIntegrationTest {
         assertEquals(savedGrade.getId(), retrievedGrade.getId());
         assertEquals(testStudent.getId(), retrievedGrade.getStudentId());
         assertEquals(testCourse.getId(), retrievedGrade.getCourseId());
-        assertEquals(92.0, retrievedGrade.getScore());
+        assertEquals(0, BigDecimal.valueOf(92.0).compareTo(retrievedGrade.getScore()));
         assertEquals("A", retrievedGrade.getLetterGrade());
     }
 
@@ -327,7 +328,7 @@ public class GradeControllerIntegrationTest {
         updateDTO.setId(savedGrade.getId());
         updateDTO.setStudentId(testStudent.getId());
         updateDTO.setCourseId(testCourse.getId());
-        updateDTO.setScore(87.0);
+        updateDTO.setScore(BigDecimal.valueOf(87.0));
         updateDTO.setLetterGrade("B"); // Service will calculate this automatically
 
         // When
@@ -347,7 +348,7 @@ public class GradeControllerIntegrationTest {
 
         GradeDTO updatedGrade = response.getBody();
         assertNotNull(updatedGrade);
-        assertEquals(87.0, updatedGrade.getScore());
+        assertEquals(0, BigDecimal.valueOf(87.0).compareTo(updatedGrade.getScore()));
         assertEquals("B", updatedGrade.getLetterGrade());
 
         // Verify grade was actually updated in database
@@ -365,7 +366,7 @@ public class GradeControllerIntegrationTest {
         updateDTO.setId(999L);
         updateDTO.setStudentId(testStudent.getId());
         updateDTO.setCourseId(testCourse.getId());
-        updateDTO.setScore(90.0);
+        updateDTO.setScore(BigDecimal.valueOf(90.0));
 
         // When
         HttpHeaders headers = new HttpHeaders();
@@ -484,7 +485,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setStudentId(testStudent.getId());
         gradeDTO.setCourseId(testCourse.getId());
-        gradeDTO.setScore(92.5);
+        gradeDTO.setScore(BigDecimal.valueOf(92.5));
         gradeDTO.setLetterGrade("A"); // Service will calculate this automatically
 
         String jsonContent = objectMapper.writeValueAsString(gradeDTO);
@@ -509,7 +510,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setStudentId(testStudent.getId());
         gradeDTO.setCourseId(testCourse.getId());
-        gradeDTO.setScore(88.0);
+        gradeDTO.setScore(BigDecimal.valueOf(88.0));
         gradeDTO.setLetterGrade("B"); // Service will calculate this automatically
 
         String jsonContent = objectMapper.writeValueAsString(gradeDTO);
@@ -542,7 +543,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setStudentId(testStudent.getId());
         gradeDTO.setCourseId(testCourse.getId());
-        gradeDTO.setScore(85.0);
+        gradeDTO.setScore(BigDecimal.valueOf(85.0));
         gradeDTO.setLetterGrade("B");
 
         // When - Simulate concurrent requests
@@ -555,7 +556,7 @@ public class GradeControllerIntegrationTest {
             final GradeDTO gradeCopy = new GradeDTO();
             gradeCopy.setStudentId(testStudent.getId());
             gradeCopy.setCourseId(testCourse.getId());
-            gradeCopy.setScore(85.0 + index);
+            gradeCopy.setScore(BigDecimal.valueOf(85.0 + index));
             gradeCopy.setLetterGrade("B" + (index > 0 ? "+" : ""));
 
             threads[i] = new Thread(() -> {
@@ -587,7 +588,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setStudentId(testStudent.getId());
         gradeDTO.setCourseId(testCourse.getId());
-        gradeDTO.setScore(0.0); // Minimum valid score
+        gradeDTO.setScore(BigDecimal.valueOf(0.0)); // Minimum valid score
         gradeDTO.setLetterGrade("F");
 
         ResponseEntity<GradeDTO> response = restTemplate.postForEntity(
@@ -600,7 +601,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO gradeDTO2 = new GradeDTO();
         gradeDTO2.setStudentId(testStudent.getId());
         gradeDTO2.setCourseId(testCourse.getId());
-        gradeDTO2.setScore(100.0); // Maximum valid score
+        gradeDTO2.setScore(BigDecimal.valueOf(100.0)); // Maximum valid score
         gradeDTO2.setLetterGrade("A+");
 
         ResponseEntity<GradeDTO> response2 = restTemplate.postForEntity(
@@ -617,7 +618,7 @@ public class GradeControllerIntegrationTest {
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setStudentId(testStudent.getId());
         gradeDTO.setCourseId(testCourse.getId());
-        gradeDTO.setScore(87.75); // Decimal precision test
+        gradeDTO.setScore(BigDecimal.valueOf(87.75)); // Decimal precision test
         gradeDTO.setLetterGrade("B+");
 
         // When
@@ -627,6 +628,6 @@ public class GradeControllerIntegrationTest {
         // Then
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(87.75, response.getBody().getScore());
+        assertEquals(0, BigDecimal.valueOf(87.75).compareTo(response.getBody().getScore()));
     }
 }

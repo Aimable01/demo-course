@@ -9,6 +9,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests the full application context with real HTTP requests.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 @DisplayName("Calculator Application End-to-End Tests")
 public class CalculatorApplicationTests {
 
@@ -104,7 +106,7 @@ public class CalculatorApplicationTests {
 
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
@@ -140,7 +142,7 @@ public class CalculatorApplicationTests {
 
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
